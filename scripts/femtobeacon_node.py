@@ -16,10 +16,18 @@ def connectDongle():
     baudrate = 115200           # Match Arduino Dongle baudrate
 
     print "Openning dongle connection..."
-    dongle = serial.Serial(port=portName, baudrate=baudrate,
-                           parity=serial.PARITY_NONE,
-                           stopbits=serial.STOPBITS_ONE,
-                           bytesize=serial.EIGHTBITS)
+    portOpened = False 
+    while not portOpened:
+        try:
+            dongle = serial.Serial(port=portName, baudrate=baudrate,
+                                   parity=serial.PARITY_NONE,
+                                   stopbits=serial.STOPBITS_ONE,
+                                   bytesize=serial.EIGHTBITS)
+            portOpened = True
+        except serial.serialutil.SerialException:
+            print "Dongle not connected"
+            sleep(3)
+
     if dongle.isOpen():
         print "Dongle openned correctly"
         sleep(3)
@@ -43,6 +51,11 @@ def makeMessage(data):
     femtoBeaconMsg should match these fields
     '''
     split_data = data.split(',')
+    if len(split_data) < 8:
+        print 'Received data is: ', data
+        print 'Nothing from femtoBeacon yet!'
+        return None
+
     msg = femtoBeaconMsg()
     msg.APP_PANID = int(split_data[0])
     msg.APP_CHANNEL = int(split_data[1])
@@ -58,11 +71,16 @@ def femtobeacon_talker():
     dongle = connectDongle()
     pub = rospy.Publisher('femtobeacon', femtoBeaconMsg, queue_size=10)
     rospy.init_node('femtobeacon_dongle', anonymous=False)  # should only be one dongle
+    beaconFound = False
     while not rospy.is_shutdown():
         data = dongle.readline()[:-2]
         msg = makeMessage(data)
-        #rospy.loginfo(msg)
-        pub.publish(msg)
+        if msg is not None:
+            if not beaconFound:
+                print 'Found beacon!'
+                beaconFound = True
+            #rospy.loginfo(msg)
+            pub.publish(msg)
 
 if __name__ == '__main__':
     try:
