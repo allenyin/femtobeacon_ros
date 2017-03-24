@@ -10,8 +10,9 @@ co = 0.
 
 def callback(data):
 	#print "beacon", data.yaw   
-	bo = data.yaw
-	print 1, " ", bo
+	#bo = data.yaw
+        print "beacon   ", data.header.stamp, "    ", data.yaw
+	#print 1, " ", bo
  
 def callback_robot(data):
 	quaternion = (
@@ -22,9 +23,9 @@ def callback_robot(data):
 
 	euler = tf.transformations.euler_from_quaternion(quaternion)
 	yaw = 180.*euler[2]/math.pi
-	#print "chair", yaw
-	co = yaw
-	print 2, " ", co
+	#co = yaw
+	#print 2, " ", co
+        print "chair    ", data.header.stamp, "    ", yaw
 
 def listener():
 

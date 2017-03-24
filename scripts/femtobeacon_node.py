@@ -50,13 +50,14 @@ def makeMessage(data):
 
     femtoBeaconMsg should match these fields
     '''
+    msg = femtoBeaconMsg()
+    msg.header.stamp = rospy.Time.now()
     split_data = data.split(',')
     if len(split_data) < 8:
         print 'Received data is: ', data
         print 'Nothing from femtoBeacon yet!'
         return None
 
-    msg = femtoBeaconMsg()
     msg.APP_PANID = int(split_data[0])
     msg.APP_CHANNEL = int(split_data[1])
     msg.APP_ADDRESS = int(split_data[2])
@@ -81,6 +82,7 @@ def femtobeacon_talker():
                 beaconFound = True
             #rospy.loginfo(msg)
             pub.publish(msg)
+            #print msg.header.stamp, msg.yaw
 
 if __name__ == '__main__':
     try:
