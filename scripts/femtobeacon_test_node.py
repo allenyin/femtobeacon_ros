@@ -11,7 +11,7 @@ co = 0.
 def callback(data):
 	#print "beacon", data.yaw   
 	#bo = data.yaw
-    print "beacon   ", data.header.stamp, "    ", data.yaw
+	print "beacon   ", data.header.stamp.secs, "    ", data.header.stamp.nsecs, "    ", data.yaw
 	#print 1, " ", bo
  
 def callback_robot(data):
@@ -25,7 +25,7 @@ def callback_robot(data):
 	yaw = 180.*euler[2]/math.pi
 	#co = yaw
 	#print 2, " ", co
-    print "chair    ", data.header.stamp, "    ", yaw
+	print "chair    ", data.header.stamp.secs, "    ", data.header.stamp.nsecs, "    ", yaw
 
 def listener():
 
