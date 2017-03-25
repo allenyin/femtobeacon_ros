@@ -25,7 +25,9 @@ chair = np.array(readings[1])
 
 # plot all the angles
 plt.figure()
-plt.plot(mapTo360(chair), 'b')
-plt.plot(mapTo360(-beacon), 'r')
+#plt.plot(mapTo360(chair), 'b')
+#plt.plot(mapTo360(-beacon), 'r')
+plt.plot(chair, 'b')
+plt.plot(-beacon, 'r')
 plt.legend(['chair', 'beacon'])
 plt.show(block=False)
