@@ -99,6 +99,27 @@ def plotData(chairData, beaconData, offset):
     plt.ylabel('Yaw degree')
     plt.show(block=False)
 
+def getBestOffset(chairData, beaconData):
+    lo = 0.0
+    hi = 120.0
+    error = np.inf
+    bestOffset = lo
+    curOffset = lo
+    
+    while curOffset < hi:
+        newData = wrapFun(-beaconData[:,1] + curOffset)
+        mse = np.mean((newData - chairData[:,1])**2)
+        #print "offset=", curOffset, ", mse=", mse, ", error=", error
+        if mse < error:
+            bestOffset = curOffset
+            error = mse
+        curOffset += 1
+
+    print "Best offset is: ", bestOffset
+    print "error is: ", error
+    return bestOffset
+
+
 """
 dataArr = readings[0]
 chairData = dataArr[dataArr[:,0]==0, 1:]
@@ -106,9 +127,20 @@ beaconData = dataArr[dataArr[:,0]==1, 1:]
 chairData, beaconData = makeSameT(chairData, beaconData)
 """
 
+# find angle off-set by minimizing mean-squared error
+offset = []
 for i in range(len(fnames)):
     dataArr = readings[0]
     chairData = dataArr[dataArr[:,0]==0, 1:]
     beaconData = dataArr[dataArr[:,0]==1, 1:]
     chairData, beaconData = makeSameT(chairData, beaconData)
-    plotData(chairData, beaconData, 66)
+    offset.append(getBestOffset(chairData, beaconData))
+    plotData(chairData, beaconData, offset[i])
+'''
+for i in range(len(fnames)):
+    dataArr = readings[0]
+    chairData = dataArr[dataArr[:,0]==0, 1:]
+    beaconData = dataArr[dataArr[:,0]==1, 1:]
+    chairData, beaconData = makeSameT(chairData, beaconData)
+    plotData(chairData, beaconData, 70)
+'''
