@@ -49,7 +49,9 @@ def parse_data(fname):
                     continue
             except ValueError:
                 print "Corrupted print out at line ", idx
-
+    
+    # remove rows with nan values
+    dataArr = dataArr[~np.isnan(dataArr).any(axis=1)]
     return dataArr
 
 def makeTime(secs, nsecs):
@@ -94,10 +96,12 @@ def makeSameT(chairData, beaconData):
 def plotData(chairData, beaconData, offset):
     plt.figure()
     plt.plot(chairData[:,0], chairData[:,1], 'b')
-    plt.plot(beaconData[:,0], wrapFun(-beaconData[:,1]+offset), 'r')
+    newData = wrapFun(-beaconData[:,1]+offset)
+    plt.plot(beaconData[:,0], newData, 'r')
     plt.xlabel('Time (s)')
     plt.ylabel('Yaw degree')
     plt.show(block=False)
+    return chairData[:,1], newData
 
 def getBestOffset(chairData, beaconData):
     lo = 0.0
@@ -108,8 +112,9 @@ def getBestOffset(chairData, beaconData):
     
     while curOffset < hi:
         newData = wrapFun(-beaconData[:,1] + curOffset)
-        mse = np.mean((newData - chairData[:,1])**2)
-        #print "offset=", curOffset, ", mse=", mse, ", error=", error
+        mse = ((newData-chairData[:,1])**2).mean()
+        #mse = np.mean((newData - chairData[:,1])**2)
+        print "offset=", curOffset, ", mse=", mse, ", error=", error
         if mse < error:
             bestOffset = curOffset
             error = mse
@@ -130,12 +135,13 @@ chairData, beaconData = makeSameT(chairData, beaconData)
 # find angle off-set by minimizing mean-squared error
 offset = []
 for i in range(len(fnames)):
-    dataArr = readings[0]
+    dataArr = readings[i]
     chairData = dataArr[dataArr[:,0]==0, 1:]
     beaconData = dataArr[dataArr[:,0]==1, 1:]
     chairData, beaconData = makeSameT(chairData, beaconData)
     offset.append(getBestOffset(chairData, beaconData))
     plotData(chairData, beaconData, offset[i])
+    #cData, newData = plotData(chairData, beaconData, 60)
 '''
 for i in range(len(fnames)):
     dataArr = readings[0]
