@@ -140,8 +140,13 @@ for i in range(len(fnames)):
     beaconData = dataArr[dataArr[:,0]==1, 1:]
     chairData, beaconData = makeSameT(chairData, beaconData)
     offset.append(getBestOffset(chairData, beaconData))
-    plotData(chairData, beaconData, offset[i])
-    #cData, newData = plotData(chairData, beaconData, 60)
+    #cData, newData = plotData(chairData, beaconData, offset[i])
+    cData, newData = plotData(chairData, beaconData, 60)
+
+    plt.figure()
+    plt.plot(cData-newData)
+    plt.ylim([-30,30])
+    plt.show(block=False)
 '''
 for i in range(len(fnames)):
     dataArr = readings[0]
